@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-11">
+        <textarea class="form-control bg-secundary text-black fw-bold" (keydown)="handleKeydown($event)"
+            (keyup)="handleKeyup(textArea)" rows="15" spellcheck="false" #textArea>{{default}}</textarea>
+    </div>
+    <div class="col-1 d-flex align-items-center">
+        <div class="row">
+            <button type="button" class="btn btn-outline-light position-relative">
+                {{getLines()}}
+                <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-black border">
+                    Lineas
+                </span>
+            </button>
+            <button type="button" class="btn btn-outline-light position-relative mt-4">
+                {{getLine()}}
+                <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-black border">
+                    Linea Actual
+                </span>
+            </button>
+            <button class="btn btn-warning fw-bold mt-5" (click)="sendData(textArea)">
+                Ejecutar
+            </button>
+            
+        </div>
+    </div>
+</div>
