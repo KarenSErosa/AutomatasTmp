@@ -12,12 +12,13 @@ export class CodeTextAreaComponent implements OnInit {
   private lines?: Number = 1;
 
   default:string = "\
-while ( a == b ) {\n\
-\tprint ( 'HolaMundo' )\n\
-} else if ( a + b == c ) {\n\
-\tprint ( 'Error' )\n\
-} else {\n\
-\tprint ( 'OK' )\n\
+def prueba ( a , b , c ) {\n\
+\twhile ( a == b ) {\n\
+\t\twhile ( c != a ) {\n\
+\t\t\tprint ( 'Hola' )\n\
+\t\t\tc = prueba ( c , b , a )\n\
+\t\t}\n\
+\t}\n\
 }"
   constructor() { }
 

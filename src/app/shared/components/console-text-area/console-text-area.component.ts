@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit } from '@angular/core';
-import {checkValue, getErrors, getTokens} from 'src/app/shared/components/console-text-area/tools/analisis_lexico'
-import {programaFuente} from 'src/app/shared/components/console-text-area/tools/analisis_sintactico'
+import { tokensList } from 'src/app/core/models/tokensList';
+import {checkValue, getLexErrors, getLexTokens} from 'src/app/shared/components/console-text-area/tools/analisis_lexico'
+import {programaFuente, getSinErrors, getSinMessage} from 'src/app/shared/components/console-text-area/tools/analisis_sintactico'
 
 @Component({
   selector: 'app-console-text-area',
@@ -9,23 +10,36 @@ import {programaFuente} from 'src/app/shared/components/console-text-area/tools/
 })
 export class ConsoleTextAreaComponent implements OnInit {
   @Input() $data?: EventEmitter<string>;
+  tokens: Array<tokensList> = [];
 
   constructor() { }
 
   ngOnInit(): void {
     this.$data?.subscribe(
       (data) => {
-        checkValue(data);
-        programaFuente([]);
+        this.tokens = checkValue(data);
+        if(!this.getLexErrorsInfo()){
+          programaFuente(this.tokens);
+        }
       }
     )
   }
 
-  getTokensInfo(){
-    return getTokens();
+  // Obtenemos la información ( String ) para mostrar la información.
+
+  getLexTokensInfo(){
+    return getLexTokens();
   }
 
-  getErrorsInfo(){
-    return getErrors();
+  getLexErrorsInfo(){
+    return getLexErrors();
+  }
+
+  getSinErrorsInfo(){
+    return getSinErrors();
+  }
+
+  getSinMessageInfo(){
+    return getSinMessage();
   }
 }

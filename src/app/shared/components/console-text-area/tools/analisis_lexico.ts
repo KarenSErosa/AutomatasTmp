@@ -1,3 +1,5 @@
+import { tokensList } from "src/app/core/models/tokensList";
+
 let ersArr = [
     {
         //Comentarios
@@ -10,91 +12,99 @@ let ersArr = [
         'er': /^((['](.)*['])|(["](.)*["]))$/
     },
     {
-        'token': 'Parentesis que abre',
+        'token': ',',
+        'er': /^,$/
+    },
+    {
+        'token': '(',
         'er': /^\($/
     },
     {
-        'token': 'Parentesis que cierra',
+        'token': ')',
         'er': /^\)$/
     },
     {
-        'token': 'Llave que abre',
+        'token': '{',
         'er': /^\{$/
     },
     {
-        'token': 'Llave que cierra',
+        'token': '}',
         'er': /^\}$/
     },
     {
-        'token': 'Importar',
+        'token': 'import',
         'er': /^import$/
     },
     {
-        'token': 'Clase',
+        'token': 'class',
         'er': /^class$/
     },
     {
-        'token': 'Retornar',
+        'token': 'def',
+        'er': /^def$/
+    },
+    {
+        'token': 'return',
         'er': /^return$/
     },
     {
-        'token': 'Nulo',
+        'token': 'null',
         'er': /^null$/
     },
     {
-        'token': 'Si',
+        'token': 'if',
         'er': /^if$/
     },
     {
-        'token': 'Sino',
+        'token': 'else',
         'er': /^else$/
     },
     {
-        'token': 'Mientras',
+        'token': 'while',
         'er': /^while$/
     },
     {
-        'token': 'Repite',
+        'token': 'for',
         'er': /^for$/
     },
     {
-        'token': 'Imprimir',
+        'token': 'print',
         'er': /^print$/
     },
     {
-        'token': 'Verdadero',
+        'token': 'true',
         'er': /^true$/
     },
     {
-        'token': 'OperadorLogico',
+        'token': 'OR',
         'er': /^((==)|(<=?)|(>=?)|(!=))$/
     },
     {
-        'token': 'OperadorAsignacion',
+        'token': '=',
         'er': /^[=]$/
     },
     {
-        'token': 'OperadorAritmeticos',
+        'token': 'OA',
         'er': /^[\/|+|\-|*]$/
     },
     {
         //Clases
-        'token': 'Clase',
+        'token': 'idClase',
         'er': /^([A-Z][\w]*)$/
     },
     {
         //Variables | Métodos
-        'token': 'Variable',
+        'token': 'id',
         'er': /^([a-z][\w]*)$/
     },
     {
         //Números Enteros
-        'token': 'Entero',
+        'token': 'int',
         'er': /^(([-+]\d|\d)\d*)$/
     },
     {
         //Números Dobles
-        'token': 'Doble',
+        'token': 'double',
         'er': /^(([-+]\d|\d)\d*[.]\d+)$/
     }
 ];
@@ -105,19 +115,22 @@ let ignore = [
 
 let tokens = '';
 let errors = '';
+let tokensList: Array<tokensList> = [];
 
-export function checkValue(lines: string) {
+export function checkValue(lines: string): Array<tokensList> {
+    tokensList = [];
     tokens = '';
     errors = '';
     if (lines.length > 0) {
         checkLines(lines.replaceAll('\t', '').split('\n'));
     }
+    return tokensList;
 }
 
-export function getTokens(): string {
+export function getLexTokens(): string {
     return tokens;
 }
-export function getErrors(): string {
+export function getLexErrors(): string {
     return errors;
 }
 
@@ -157,16 +170,22 @@ function checkWords(words: Array<string>, indexLine: number) {
     return true;
 }
 
-function checkTokens(word: string, index: number) {
+function checkTokens(word: string, indexA: number) {
     for (const index in ersArr) {
         const { er, token } = ersArr[index];
         if (er.test(word)) {
-            tokens += 'Token -> ' + token + "\n";
-            tokens += 'Palabra -> ' + word + "\n\n";
+            tokens += 'Palabra -> ' + word + "\n";
+            tokens += 'Token -> ' + token + "\n\n";
+            tokensList.push(
+                {
+                    'token': token,
+                    'linea': Number(indexA)
+                }
+            );
             return true;
         }
     }
-    errors += 'Línea: ' + index + '   < - >   Causa del Error -> ' + word + "\n";
+    errors += 'Línea: ' + indexA + '   < - >   Causa del Error -> ' + word + "\n";
     return false;
 }
 

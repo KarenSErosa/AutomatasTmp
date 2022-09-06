@@ -1,6 +1,10 @@
 <div class="row mt-3">
-    <div class="col-5">
+    <div class="col-4">
         <p class="text-white h5">Léxico</p>
-        <textarea class="form-control bg-secundary fw-bold" rows="5" disabled>{{getErrorsInfo().length>0?getErrorsInfo()+"\n":''}}{{getTokensInfo()}}</textarea>
+        <textarea class="form-control bg-secundary fw-bold" rows="5" disabled>{{getLexErrorsInfo().length>0?getLexErrorsInfo()+"\n":''}}{{getLexTokensInfo()}}</textarea>
+    </div>
+    <div class="col-4">
+        <p class="text-white h5">Sintactico</p>
+        <textarea class="form-control bg-secundary fw-bold" rows="5" disabled>{{getSinErrorsInfo().length>0?getSinErrorsInfo()+"\n":''}}{{getSinMessageInfo()}}</textarea>
     </div>
 </div>
