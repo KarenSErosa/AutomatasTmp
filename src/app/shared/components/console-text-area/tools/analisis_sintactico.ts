@@ -49,6 +49,9 @@ function Statements(tokens: Array<tokensList>) {
         const { linea } = tokens[indice];
         if (evaluarTokens(tokens, indice, ['Comentario'])) {
             Statements(tokens);
+        }else if (evaluarTokens(tokens, indice, ['class'])) {
+            Class(tokens);
+            Statements(tokens);
         } else if (evaluarTokens(tokens, indice, ['print'])) {
             Print(tokens);
             Statements(tokens);
@@ -58,44 +61,104 @@ function Statements(tokens: Array<tokensList>) {
         } else if (evaluarTokens(tokens, indice, ['while'])) {
             While(tokens);
             Statements(tokens);
+        } else if (evaluarTokens(tokens, indice, ['for'])) {
+            For(tokens);
+            Statements(tokens);
         } else if (evaluarTokens(tokens, indice, ['id'])) {
             Asignament(tokens);
             Statements(tokens);
         } else if (evaluarTokens(tokens, indice, ['def'])) {
             Functions(tokens);
             Statements(tokens);
-        } 
+        }
     }
 }
 
-function Functions(tokens: Array<tokensList>){
-    const { linea } = tokens[indice];
-    if(evaluarTokens(tokens, indice, ['id'])){
+function Class(tokens:Array<tokensList>){
+    const {linea} = tokens[indice];
+     if(evaluarTokens(tokens, indice, ['idClase'])){
         if(evaluarTokens(tokens, indice, ['('])){
             Parameters(tokens);
             if(evaluarTokens(tokens, indice, [')'])){
                 if(evaluarTokens(tokens, indice, ['{'])){
                     Statements(tokens);
                     if(!evaluarTokens(tokens, indice, ['}'])){
-                        addErrors('Se esperaba una "}"', linea, '\n', false);
+                        addErrors('Se espesraba una "}"', linea, '\n', false);
                     }
                 }else{
-                    addErrors('Se esperaba una "{"', linea, '\n', false);
+                    addErrors('Se espesraba una "{"', linea, '\n', false);
                 }
             }else{
-                addErrors('Se esperaba una ")"', linea, '\n', false);
+                addErrors('Se esperaba un ")"', linea, '\n', false);
             }
         }else{
+            addErrors('Se esperaba un "("', linea, '\n', false);
+        }
+     }else{
+        addErrors('Se esperaba un "idClass"', linea, '\n', false);
+     }
+}
+
+function For(tokens: Array<tokensList>) {
+    const { linea } = tokens[indice];
+    if (evaluarTokens(tokens, indice, ['('])) {
+        if(evaluarTokens(tokens, indice, ['id'])){
+            if(evaluarTokens(tokens, indice, [':'])){
+                if(evaluarTokens(tokens, indice, ['id'])){
+                    if(evaluarTokens(tokens, indice, [')'])){
+                        if(evaluarTokens(tokens, indice, ['{'])){
+                            Statements(tokens);
+                            if(!evaluarTokens(tokens, indice, ['}'])){
+                                addErrors('Se espesraba una "}"', linea, '\n', false);
+                            }
+                        }else{
+                            addErrors('Se espesraba una "{"', linea, '\n', false);
+                        }
+                    }else{
+                        addErrors('Se espesraba un ")"', linea, '\n', false);
+                    }
+                }else{
+                    addErrors('Se espesraba una "id"', linea, '\n', false);
+                }
+            }else{
+                addErrors('Se espesraban ":"', linea, '\n', false);
+            }
+        }else{
+            addErrors('Se espesraba una "id"', linea, '\n', false);
+        }
+    } else {
+        addErrors('Se esperaba una "("', linea, '\n', false);
+    }
+}
+
+function Functions(tokens: Array<tokensList>) {
+    const { linea } = tokens[indice];
+    if (evaluarTokens(tokens, indice, ['id'])) {
+        if (evaluarTokens(tokens, indice, ['('])) {
+            Parameters(tokens);
+            if (evaluarTokens(tokens, indice, [')'])) {
+                if (evaluarTokens(tokens, indice, ['{'])) {
+                    Statements(tokens);
+                    if (!evaluarTokens(tokens, indice, ['}'])) {
+                        addErrors('Se esperaba una "}"', linea, '\n', false);
+                    }
+                } else {
+                    addErrors('Se esperaba una "{"', linea, '\n', false);
+                }
+            } else {
+                addErrors('Se esperaba una ")"', linea, '\n', false);
+            }
+        } else {
             addErrors('Se esperaba una "("', linea, '\n', false);
         }
-    }else{
+    } else {
         addErrors('Se esperaba un nombre válido', linea, '\n', false);
     }
 }
 
-function Asignament(tokens: Array<tokensList>){
+function Asignament(tokens: Array<tokensList>) {
     const { linea } = tokens[indice];
-    if(evaluarTokens(tokens, indice, ['='])){
+    if (evaluarTokens(tokens, indice, ['='])) {
         Expresion(tokens);
     }
 }
