@@ -27,6 +27,7 @@ function addErrors(message: string, line: number, finalString: string, b: boolea
     bandera = b;
 }
 
+
 function ProgramaFuente(tokens: Array<tokensList>) {
     Statements(tokens);
     //Sentencias(tokens);
@@ -37,9 +38,10 @@ function ProgramaFuente(tokens: Array<tokensList>) {
             indice--;
         }
         const { linea } = tokens[indice];
-        addErrors('No se reconoce como una sentencia válida', linea, '\n', false);
+        addErrors("No se reconoce como una sentencia válida, ultimá validación: " + tokens[indice].token, linea, '\n', false);
     }
 }
+
 
 function Statements(tokens: Array<tokensList>) {
     if (indice < tokens.length) {
@@ -51,8 +53,72 @@ function Statements(tokens: Array<tokensList>) {
             Print(tokens);
             Statements(tokens);
         } else if (evaluarTokens(tokens, indice, ['if'])) {
+            If(tokens);
+            Statements(tokens);
+        } else if (evaluarTokens(tokens, indice, ['while'])) {
+            While(tokens);
+            Statements(tokens);
+        } else if (evaluarTokens(tokens, indice, ['id'])) {
+            Asignament(tokens);
+            Statements(tokens);
+        } else if (evaluarTokens(tokens, indice, ['def'])) {
+            Functions(tokens);
+            Statements(tokens);
+        } 
+    }
+}
 
+function Functions(tokens: Array<tokensList>){
+    const { linea } = tokens[indice];
+    if(evaluarTokens(tokens, indice, ['id'])){
+        if(evaluarTokens(tokens, indice, ['('])){
+            Parameters(tokens);
+            if(evaluarTokens(tokens, indice, [')'])){
+                if(evaluarTokens(tokens, indice, ['{'])){
+                    Statements(tokens);
+                    if(!evaluarTokens(tokens, indice, ['}'])){
+                        addErrors('Se esperaba una "}"', linea, '\n', false);
+                    }
+                }else{
+                    addErrors('Se esperaba una "{"', linea, '\n', false);
+                }
+            }else{
+                addErrors('Se esperaba una ")"', linea, '\n', false);
+            }
+        }else{
+            addErrors('Se esperaba una "("', linea, '\n', false);
         }
+    }else{
+        addErrors('Se esperaba un nombre válido', linea, '\n', false);
+    }
+}
+
+function Asignament(tokens: Array<tokensList>){
+    const { linea } = tokens[indice];
+    if(evaluarTokens(tokens, indice, ['='])){
+        Expresion(tokens);
+    }
+}
+
+function While(tokens: Array<tokensList>) {
+    const { linea } = tokens[indice];
+    if (evaluarTokens(tokens, indice, ['('])) {
+        Condition(tokens);
+        if (evaluarTokens(tokens, indice, [')'])) {
+            if (evaluarTokens(tokens, indice, ['{'])) {
+                console.log('hOla')
+                Statements(tokens);
+                if (!evaluarTokens(tokens, indice, ["}"])) {
+                    addErrors('Se esperaba una "}"', linea, '\n', false);
+                }
+            } else {
+                addErrors('Se esperaba una "{"', linea, '\n', false);
+            }
+        } else {
+            addErrors('Se esperaba un ")"', linea, '\n', false);
+        }
+    } else {
+        addErrors('Se esperaba un "("', linea, '\n', false);
     }
 }
 
@@ -60,13 +126,14 @@ function If(tokens: Array<tokensList>) {
     if (indice < tokens.length) {
         const { linea } = tokens[indice];
         if (evaluarTokens(tokens, indice, ['('])) {
-            Condicion(tokens);
+            Condition(tokens);
             if (evaluarTokens(tokens, indice, [')'])) {
                 if (evaluarTokens(tokens, indice, ['{'])) {
-                    Sentencias(tokens);
+                    Statements(tokens);
                     if (evaluarTokens(tokens, indice, ["}"])) {
-                        S2(tokens);
-                        Sentencias(tokens);
+                        if (evaluarTokens(tokens, indice, ['else'])) {
+                            Else(tokens);
+                        }
                     } else {
                         addErrors('Se esperaba una "}"', linea, '\n', false);
                     }
@@ -78,6 +145,74 @@ function If(tokens: Array<tokensList>) {
             }
         } else {
             addErrors('Se esperaba un "("', linea, '\n', false);
+        }
+    } else {
+        addErrors('Instrucción incompleta', tokens[indice - 1].linea, '\n', false);
+    }
+}
+
+function Condition(tokens: Array<tokensList>) {
+    const { linea } = tokens[indice];
+    Expresion(tokens);
+    if (evaluarTokens(tokens, indice, ['OR'])) {
+        Condition(tokens);
+    }
+}
+
+function Expresion(tokens: Array<tokensList>) {
+    const { linea } = tokens[indice];
+    if (evaluarTokens(tokens, indice, ['('])) {
+        VBasic(tokens);
+        ExpresionP(tokens);
+        if (!evaluarTokens(tokens, indice, [')'])) {
+            addErrors('Se esperaba un ")"', linea, '\n', false);
+        }
+        ExpresionP(tokens);
+    } else {
+        VBasic(tokens);
+        ExpresionP(tokens);
+    }
+}
+
+function ExpresionP(tokens: Array<tokensList>) {
+    const { linea } = tokens[indice];
+    if (evaluarTokens(tokens, indice, ['OA'])) {
+        Expresion(tokens);
+    }
+}
+
+function VBasic(tokens: Array<tokensList>) {
+    if (indice < tokens.length) {
+        //Obtenemos la línea del token a evaluar
+        const { linea } = tokens[indice];
+        if (evaluarTokens(tokens, indice, ["int"])) {
+        } else if (evaluarTokens(tokens, indice, ["double"])) {
+        } else if (evaluarTokens(tokens, indice, ["id"])) {
+            if (evaluarTokens(tokens, indice, ['('])) {
+                Parameters(tokens);
+                if (!evaluarTokens(tokens, indice, [')'])) {
+                    addErrors('Se esperaba un )', indice, '\n', false);
+                }
+            }
+        } else if (evaluarTokens(tokens, indice, ["Cadena"])) {
+        } else if (evaluarTokens(tokens, indice, ['true'])) {
+        } else if (evaluarTokens(tokens, indice, ['false'])) {
+        } else {
+            addErrors('Se esperaba una expresión válida', linea, '\n', false);
+        }
+    }
+}
+
+function Else(tokens: Array<tokensList>) {
+    if (indice < tokens.length) {
+        const { linea } = tokens[indice];
+        if (evaluarTokens(tokens, indice, ['if'])) {
+            If(tokens);
+        } else if (evaluarTokens(tokens, indice, ['{'])) {
+            Statements(tokens);
+            if (!evaluarTokens(tokens, indice, ["}"])) {
+                addErrors('Se esperaba una "}"', linea, '\n', false);
+            }
         }
     }
 }
@@ -114,6 +249,10 @@ function Parameters(tokens: Array<tokensList>) {
             }
             ParametersP(tokens);
         } else if (evaluarTokens(tokens, indice, ["Cadena"])) {
+            ParametersP(tokens);
+        } else if (evaluarTokens(tokens, indice, ['true'])) {
+            ParametersP(tokens);
+        } else if (evaluarTokens(tokens, indice, ['false'])) {
             ParametersP(tokens);
         }
     }

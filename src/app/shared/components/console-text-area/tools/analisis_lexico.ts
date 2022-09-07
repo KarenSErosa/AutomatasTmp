@@ -127,6 +127,10 @@ export function checkValue(lines: string): Array<tokensList> {
     return tokensList;
 }
 
+function getA(a:number, b:number):number{
+    return a+b;
+}
+
 export function getLexTokens(): string {
     return tokens;
 }
