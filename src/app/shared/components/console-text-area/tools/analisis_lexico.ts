@@ -159,9 +159,42 @@ function checkLine(line: string, indexLine: number) {
     } else if (iComment == 0) {
         words.push(line);
     } else {
-        words = line.split(' ');
+        if(line.indexOf("'") >= 0){
+            getStrings(line, words);
+        }else{
+            words = line.split(' ');
+        }
     }
     return checkWords(words, indexLine);
+}
+
+function getStrings(line: string, words: Array<string>) {
+    const lineArr = line.split(' ');
+    let flag = false;
+    let comment = "";
+    if(line.indexOf("'") >= 0){
+        lineArr.forEach(word =>{
+            if(word.charAt(0) == "'" && !flag){
+                flag = true;
+                comment = "";
+            }
+            if(flag){
+                if(comment!= ""){
+                    comment+= ' '
+                }
+                comment += word;
+                if(word.charAt(word.length-1) == "'"){
+                    flag = false;
+                    words.push(comment);
+                }
+            }else{
+                words.push(word);
+            }
+            
+        });
+    }else{
+        words = lineArr;
+    }
 }
 
 function checkWords(words: Array<string>, indexLine: number) {
