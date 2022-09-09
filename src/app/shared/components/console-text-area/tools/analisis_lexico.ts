@@ -41,7 +41,7 @@ let ersArr = [
     },
     {
         'token': 'class',
-        'er': /^class$/
+        'er': /^clase$/
     },
     {
         'token': 'def',
@@ -52,8 +52,8 @@ let ersArr = [
         'er': /^return$/
     },
     {
-        'token': 'null',
-        'er': /^null$/
+        'token': 'const',
+        'er': /^const$/
     },
     {
         'token': 'if',
@@ -129,10 +129,6 @@ export function checkValue(lines: string): Array<tokensList> {
         checkLines(lines.replaceAll('\t', '').split('\n'));
     }
     return tokensList;
-}
-
-function getA(a:number, b:number):number{
-    return a+b;
 }
 
 export function getLexTokens(): string {

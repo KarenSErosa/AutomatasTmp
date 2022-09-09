@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { handleKeydown } from './tools/handleKey';
+import { addLineNumber, line_counter } from './tools/numberTextArea'
 @Component({
   selector: 'app-code-text-area',
   templateUrl: './code-text-area.component.html',
@@ -9,12 +10,10 @@ import { handleKeydown } from './tools/handleKey';
 export class CodeTextAreaComponent implements OnInit {
 
   @Input() $data?: EventEmitter<string>;
-  private line?: Number = 1;
-  private lines?: Number = 1;
 
   form: FormGroup = new FormGroup({});
   private fileReader = new FileReader();
-  private file: any;
+
   constructor() { }
 
 
@@ -25,32 +24,13 @@ export class CodeTextAreaComponent implements OnInit {
       lineCount: new FormControl('', [])
     });
     this.fileReader.onload = () => {
-      const {textArea} = this.form.controls;
-      const valueFromFile = (''+this.fileReader.result).replaceAll("\r\n", "\n");
+      const { textArea } = this.form.controls;
+      const valueFromFile = ('' + this.fileReader.result).replaceAll("\r\n", "\n");
       textArea.setValue(valueFromFile);
-    }
-    var codeEditor: any = document.getElementById('codeEditor');
-    var lineCounter: any = document.getElementById('lineCounter');
-    codeEditor.addEventListener('scroll', () => {
-      lineCounter.scrollTop = codeEditor.scrollTop;
-      lineCounter.scrollLeft = codeEditor.scrollLeft;
-    });
-    var lineCountCache = 0;
-    function line_counter() {
-      var lineCount = codeEditor.value.split('\n').length;
-      var outarr = new Array();
-      if (lineCountCache != lineCount) {
-        for (var x = 0; x < lineCount; x++) {
-          outarr[x] = (x + 1) + '.';
-        }
-        lineCounter.value = outarr.join('\n');
-      }
-      lineCountCache = lineCount;
-    }
-    codeEditor.addEventListener('input', () => {
       line_counter();
-    });
-    
+    }
+    addLineNumber('lineCounter', 'codeEditor');
+
   }
 
   fileChanged(e: any) {
@@ -60,6 +40,7 @@ export class CodeTextAreaComponent implements OnInit {
 
   keyDown(event: any) {
     handleKeydown(event);
+    line_counter();
   }
 
   sendData() {

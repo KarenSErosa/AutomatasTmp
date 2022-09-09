@@ -5,11 +5,11 @@
                 <input type="file" accept=".txt" formControlName="file" class="form-control" (change)="fileChanged($event)">
             </div>
             <div>
-                <textarea id='lineCounter' wrap='off' readonly >12</textarea>
-                <textarea class="form-control" spellcheck="false" formControlName = "textArea" id='codeEditor' wrap='off' (keydown)="keyDown($event)"></textarea>
+                <textarea id='lineCounter' wrap='off' readonly >1.</textarea>
+                <textarea id='codeEditor' spellcheck="false" formControlName = "textArea" wrap='off' (keydown)="keyDown($event)"></textarea>
             </div>
             <!-- <textarea formControlName="textArea" id='test' class="form-control bg-secundary text-black fw-bold" (keydown)="keyDown($event)"
-                (keyup)="handleKeyup(textArea)" rows="15" spellcheck="false" #textArea></textarea> -->
+                rows="15" spellcheck="false" #textArea></textarea> -->
         </div>
     </form>
     <div class="col-1 d-flex align-items-center">

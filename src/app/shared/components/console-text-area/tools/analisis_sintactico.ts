@@ -40,6 +40,8 @@ function ProgramaFuente(tokens: Array<tokensList>) {
     if (bandera && indice == tokens.length) {
         message = 'Todo OK';
     } else {
+        console.log(tokens)
+        console.log(indice)
         if (!tokens[indice]) {
             indice--;
         }
@@ -51,7 +53,6 @@ function ProgramaFuente(tokens: Array<tokensList>) {
 
 function Statements(tokens: Array<tokensList>) {
     if (indice < tokens.length) {
-        let linea = getLine(tokens);
         if (evaluarTokens(tokens, indice, ['Comentario'])) {
             Statements(tokens);
         } else if (evaluarTokens(tokens, indice, ['class'])) {
@@ -69,128 +70,53 @@ function Statements(tokens: Array<tokensList>) {
         } else if (evaluarTokens(tokens, indice, ['for'])) {
             For(tokens);
             Statements(tokens);
+        } else if (evaluarTokens(tokens, indice, ['const'])) {
+            Desestruct(tokens);
+            Statements(tokens);
         } else if (evaluarTokens(tokens, indice, ['id'])) {
             Asignament(tokens);
             Statements(tokens);
         } else if (evaluarTokens(tokens, indice, ['def'])) {
             Functions(tokens);
             Statements(tokens);
+        } else if (evaluarTokens(tokens, indice, ['return'])) {
+            Expression(tokens);
+            Statements(tokens);
         }
+    }
+}
+
+function Desestruct(tokens: Array<tokensList>) {
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['{'])) {
+        ParametersF(tokens);
+        if (evaluarTokens(tokens, indice, ['}'])) {
+            if (evaluarTokens(tokens, indice, ['='])) {
+                Expression(tokens);
+            } else {
+                addErrors('Se esperaba un "="', linea, '\n', false);
+            }
+        } else {
+            addErrors('Se esperaba una "}"', linea, '\n', false);
+        }
+    } else {
+        addErrors('Se esperaba una "{"', linea, '\n', false);
     }
 }
 
 function Class(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        let linea = getLine(tokens);
-        if (evaluarTokens(tokens, indice, ['idClase'])) {
-            if (evaluarTokens(tokens, indice, ['('])) {
-                Parameters(tokens);
-                if (evaluarTokens(tokens, indice, [')'])) {
-                    if (evaluarTokens(tokens, indice, ['{'])) {
-                        Statements(tokens);
-                        if (!evaluarTokens(tokens, indice, ['}'])) {
-                            addErrors('Se espesraba una "}"', linea, '\n', false);
-                        }
-                    } else {
-                        addErrors('Se espesraba una "{"', linea, '\n', false);
-                    }
-                } else {
-                    addErrors('Se esperaba un ")"', linea, '\n', false);
-                }
-            } else {
-                addErrors('Se esperaba un "("', linea, '\n', false);
-            }
-        } else {
-            addErrors('Se esperaba un "idClass"', linea, '\n', false);
-        }
-    }
-}
-
-function For(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        let linea = getLine(tokens);
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['idClase'])) {
         if (evaluarTokens(tokens, indice, ['('])) {
-            if (evaluarTokens(tokens, indice, ['id'])) {
-                if (evaluarTokens(tokens, indice, [':'])) {
-                    if (evaluarTokens(tokens, indice, ['id'])) {
-                        if (evaluarTokens(tokens, indice, [')'])) {
-                            if (evaluarTokens(tokens, indice, ['{'])) {
-                                Statements(tokens);
-                                if (!evaluarTokens(tokens, indice, ['}'])) {
-                                    addErrors('Se espesraba una "}"', linea, '\n', false);
-                                }
-                            } else {
-                                addErrors('Se espesraba una "{"', linea, '\n', false);
-                            }
-                        } else {
-                            addErrors('Se espesraba un ")"', linea, '\n', false);
-                        }
-                    } else {
-                        addErrors('Se espesraba una "id"', linea, '\n', false);
-                    }
-                } else {
-                    addErrors('Se espesraban ":"', linea, '\n', false);
-                }
-            } else {
-                addErrors('Se espesraba una "id"', linea, '\n', false);
-            }
-        } else {
-            addErrors('Se esperaba una "("', linea, '\n', false);
-        }
-    }
-}
-
-function Functions(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        let linea = getLine(tokens);
-        if (evaluarTokens(tokens, indice, ['id'])) {
-            if (evaluarTokens(tokens, indice, ['('])) {
-                Parameters(tokens);
-                if (evaluarTokens(tokens, indice, [')'])) {
-                    if (evaluarTokens(tokens, indice, ['{'])) {
-                        Statements(tokens);
-                        if (!evaluarTokens(tokens, indice, ['}'])) {
-                            addErrors('Se esperaba una "}"', linea, '\n', false);
-                        }
-                    } else {
-                        addErrors('Se esperaba una "{"', linea, '\n', false);
-                    }
-                } else {
-                    addErrors('Se esperaba una ")"', linea, '\n', false);
-                }
-            } else {
-                addErrors('Se esperaba una "("', linea, '\n', false);
-            }
-        } else {
-            addErrors('Se esperaba un nombre válido', linea, '\n', false);
-        }
-    }
-}
-
-function Asignament(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        let linea = getLine(tokens);
-        if (evaluarTokens(tokens, indice, ['='])) {
-            Expresion(tokens);
-        } else {
-            addErrors('Se esperaba un =', linea, '\n', false);
-        }
-    }
-}
-
-function While(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        let linea = getLine(tokens);
-        if (evaluarTokens(tokens, indice, ['('])) {
-            Condition(tokens);
+            ParametersF(tokens);
             if (evaluarTokens(tokens, indice, [')'])) {
                 if (evaluarTokens(tokens, indice, ['{'])) {
                     Statements(tokens);
-                    if (!evaluarTokens(tokens, indice, ["}"])) {
-                        addErrors('Se esperaba una "}"', linea, '\n', false);
+                    if (!evaluarTokens(tokens, indice, ['}'])) {
+                        addErrors('Se espesraba una "}"', linea, '\n', false);
                     }
                 } else {
-                    addErrors('Se esperaba una "{"', linea, '\n', false);
+                    addErrors('Se espesraba una "{"', linea, '\n', false);
                 }
             } else {
                 addErrors('Se esperaba un ")"', linea, '\n', false);
@@ -198,6 +124,95 @@ function While(tokens: Array<tokensList>) {
         } else {
             addErrors('Se esperaba un "("', linea, '\n', false);
         }
+    } else {
+        addErrors('Se esperaba un "idClass"', linea, '\n', false);
+    }
+}
+
+function For(tokens: Array<tokensList>) {
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['('])) {
+        if (evaluarTokens(tokens, indice, ['id'])) {
+            if (evaluarTokens(tokens, indice, [':'])) {
+                if (evaluarTokens(tokens, indice, ['id'])) {
+                    if (evaluarTokens(tokens, indice, [')'])) {
+                        if (evaluarTokens(tokens, indice, ['{'])) {
+                            Statements(tokens);
+                            if (!evaluarTokens(tokens, indice, ['}'])) {
+                                addErrors('Se espesraba una "}"', linea, '\n', false);
+                            }
+                        } else {
+                            addErrors('Se espesraba una "{"', linea, '\n', false);
+                        }
+                    } else {
+                        addErrors('Se espesraba un ")"', linea, '\n', false);
+                    }
+                } else {
+                    addErrors('Se espesraba una "id"', linea, '\n', false);
+                }
+            } else {
+                addErrors('Se espesraban ":"', linea, '\n', false);
+            }
+        } else {
+            addErrors('Se espesraba una "id"', linea, '\n', false);
+        }
+    } else {
+        addErrors('Se esperaba una "("', linea, '\n', false);
+    }
+}
+
+function Functions(tokens: Array<tokensList>) {
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['id'])) {
+        if (evaluarTokens(tokens, indice, ['('])) {
+            ParametersF(tokens);
+            if (evaluarTokens(tokens, indice, [')'])) {
+                if (evaluarTokens(tokens, indice, ['{'])) {
+                    Statements(tokens);
+                    if (!evaluarTokens(tokens, indice, ['}'])) {
+                        addErrors('Se esperaba una "}"', linea, '\n', false);
+                    }
+                } else {
+                    addErrors('Se esperaba una "{"', linea, '\n', false);
+                }
+            } else {
+                addErrors('Se esperaba una ")"', linea, '\n', false);
+            }
+        } else {
+            addErrors('Se esperaba una "("', linea, '\n', false);
+        }
+    } else {
+        addErrors('Se esperaba un nombre válido', linea, '\n', false);
+    }
+}
+
+function Asignament(tokens: Array<tokensList>) {
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['='])) {
+        Expression(tokens);
+    } else {
+        addErrors('Se esperaba un =', linea, '\n', false);
+    }
+}
+
+function While(tokens: Array<tokensList>) {
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['('])) {
+        Condition(tokens);
+        if (evaluarTokens(tokens, indice, [')'])) {
+            if (evaluarTokens(tokens, indice, ['{'])) {
+                Statements(tokens);
+                if (!evaluarTokens(tokens, indice, ["}"])) {
+                    addErrors('Se esperaba una "}"', linea, '\n', false);
+                }
+            } else {
+                addErrors('Se esperaba una "{"', linea, '\n', false);
+            }
+        } else {
+            addErrors('Se esperaba un ")"', linea, '\n', false);
+        }
+    } else {
+        addErrors('Se esperaba un "("', linea, '\n', false);
     }
 }
 
@@ -231,87 +246,100 @@ function If(tokens: Array<tokensList>) {
 }
 
 function Condition(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        let linea = getLine(tokens);
-        Expresion(tokens);
-        if (evaluarTokens(tokens, indice, ['OR'])) {
-            Condition(tokens);
-        }
+    let linea = getLine(tokens);
+    Expression(tokens);
+    if (evaluarTokens(tokens, indice, ['OR'])) {
+        Condition(tokens);
     }
 }
 
-function Expresion(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        let linea = getLine(tokens);
-        if (evaluarTokens(tokens, indice, ['('])) {
-            VBasic(tokens);
-            ExpresionP(tokens);
-            if (!evaluarTokens(tokens, indice, [')'])) {
-                addErrors('Se esperaba un ")"', linea, '\n', false);
-            }
-            ExpresionP(tokens);
-        } else {
-            VBasic(tokens);
-            ExpresionP(tokens);
+function Expression(tokens: Array<tokensList>) {
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['('])) {
+        VBasic(tokens);
+        ExpressionP(tokens);
+        if (!evaluarTokens(tokens, indice, [')'])) {
+            addErrors('Se esperaba un ")"', linea, '\n', false);
         }
+        ExpressionP(tokens);
+    } else {
+        VBasic(tokens);
+        ExpressionP(tokens);
     }
 }
 
-function ExpresionP(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        if (evaluarTokens(tokens, indice, ['OA'])) {
-            Expresion(tokens);
-        }
+function ExpressionP(tokens: Array<tokensList>) {
+    if (evaluarTokens(tokens, indice, ['OA'])) {
+        Expression(tokens);
     }
 }
 
 function VBasic(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        //Obtenemos la línea del token a evaluar
-        let linea = getLine(tokens);
-        if (evaluarTokens(tokens, indice, ["int"])) {
-        } else if (evaluarTokens(tokens, indice, ["double"])) {
-        } else if (evaluarTokens(tokens, indice, ["id"])) {
-            if (evaluarTokens(tokens, indice, ['('])) {
-                Parameters(tokens);
-                if (!evaluarTokens(tokens, indice, [')'])) {
-                    addErrors('Se esperaba un )', indice, '\n', false);
-                }
+    //Obtenemos la línea del token a evaluar
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ["int"])) {
+    } else if (evaluarTokens(tokens, indice, ["double"])) {
+    } else if (evaluarTokens(tokens, indice, ["id"])) {
+        if (evaluarTokens(tokens, indice, ['('])) {
+            Parameters(tokens);
+            if (!evaluarTokens(tokens, indice, [')'])) {
+                addErrors('Se esperaba un )', indice, '\n', false);
             }
-        } else if (evaluarTokens(tokens, indice, ["Cadena"])) {
-        } else if (evaluarTokens(tokens, indice, ['true'])) {
-        } else if (evaluarTokens(tokens, indice, ['false'])) {
-        } else {
-            addErrors('Se esperaba una expresión válida', linea, '\n', false);
         }
+    } else if (evaluarTokens(tokens, indice, ["Cadena"])) {
+    } else if (evaluarTokens(tokens, indice, ['true'])) {
+    } else if (evaluarTokens(tokens, indice, ['false'])) {
+    } else {
+        addErrors('Se esperaba una expresión válida', linea, '\n', false);
     }
 }
 
 function Else(tokens: Array<tokensList>) {
-    if (indice < tokens.length) {
-        let linea = getLine(tokens);
-        if (evaluarTokens(tokens, indice, ['if'])) {
-            If(tokens);
-        } else if (evaluarTokens(tokens, indice, ['{'])) {
-            Statements(tokens);
-            if (!evaluarTokens(tokens, indice, ["}"])) {
-                addErrors('Se esperaba una "}"', linea, '\n', false);
-            }
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['if'])) {
+        If(tokens);
+    } else if (evaluarTokens(tokens, indice, ['{'])) {
+        Statements(tokens);
+        if (!evaluarTokens(tokens, indice, ["}"])) {
+            addErrors('Se esperaba una "}"', linea, '\n', false);
         }
+    } else {
+        addErrors('Se esperaba un if o una "{"', linea, '\n', false);
     }
 }
 
 function Print(tokens: Array<tokensList>) {
+    //Obtenemos la línea del token a evaluar
+    let linea = getLine(tokens);
+    if (evaluarTokens(tokens, indice, ['('])) {
+        Parameters(tokens);
+        if (!evaluarTokens(tokens, indice, [')'])) {
+            addErrors('Se esperaba un ")"', linea, '\n', false);
+        }
+    } else {
+        addErrors('Se esperaba un "("', linea, '\n', false);
+    }
+}
+
+function ParametersF(tokens: Array<tokensList>) {
+    if (evaluarTokens(tokens, indice, ["id"])) {
+        ParametersFP(tokens);
+    }
+}
+function ParametersFP(tokens: Array<tokensList>) {
     if (indice < tokens.length) {
-        //Obtenemos la línea del token a evaluar
+        if (evaluarTokens(tokens, indice, [","])) {
+            ParametersFPP(tokens);
+        }
+    }
+}
+function ParametersFPP(tokens: Array<tokensList>) {
+    if (indice < tokens.length) {
         let linea = getLine(tokens);
-        if (evaluarTokens(tokens, indice, ['('])) {
-            Parameters(tokens);
-            if (!evaluarTokens(tokens, indice, [')'])) {
-                addErrors('Se esperaba un ")"', linea, '\n', false);
-            }
+        if (evaluarTokens(tokens, indice, ["id"])) {
+            ParametersFP(tokens);
         } else {
-            addErrors('Se esperaba un "("', linea, '\n', false);
+            addErrors('Se esperaba un valor válido despues de la ","', linea, '\n', false);
         }
     }
 }
@@ -376,7 +404,6 @@ function ParametersPP(tokens: Array<tokensList>) {
 function evaluarTokens(tokens: Array<tokensList>, index: number, checkTokens: Array<string>): boolean {
     if (indice < tokens.length) {
         if (index + checkTokens.length <= tokens.length && bandera) {
-            const indiceOriginal: number = index;
             for (const indexToken in checkTokens) {
                 const { token } = tokens[index++];
                 const checktoken = checkTokens[indexToken];
