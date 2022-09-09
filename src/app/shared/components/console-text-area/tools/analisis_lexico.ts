@@ -37,7 +37,7 @@ let ersArr = [
     },
     {
         'token': 'import',
-        'er': /^import$/
+        'er': /^importar$/
     },
     {
         'token': 'class',
@@ -45,39 +45,39 @@ let ersArr = [
     },
     {
         'token': 'def',
-        'er': /^def$/
+        'er': /^definir$/
     },
     {
         'token': 'return',
-        'er': /^return$/
+        'er': /^retornar$/
     },
     {
         'token': 'const',
-        'er': /^const$/
+        'er': /^constante$/
     },
     {
         'token': 'if',
-        'er': /^if$/
+        'er': /^si$/
     },
     {
         'token': 'else',
-        'er': /^else$/
+        'er': /^sino$/
     },
     {
         'token': 'while',
-        'er': /^while$/
+        'er': /^mientras$/
     },
     {
         'token': 'for',
-        'er': /^for$/
+        'er': /^repite$/
     },
     {
         'token': 'print',
-        'er': /^print$/
+        'er': /^imprime$/
     },
     {
         'token': 'true',
-        'er': /^true$/
+        'er': /^verdadero$/
     },
     {
         'token': 'OR',

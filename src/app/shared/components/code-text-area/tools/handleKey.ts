@@ -6,15 +6,37 @@ export function handleKeydown(event: any) {
       event.target.value = event.target.value.substring(0, start) + '\t' + event.target.value.substring(end);
       event.target.selectionStart = event.target.selectionEnd = start + 1;
     } else if (event.key == '{') {
-      agregarCaracterFinal(event, '{', '}', '\n', 1);
+      agregarCaracterFinal(event, ' {', '}', '\n', 3);
     } else if (event.key == "'") {
-      agregarCaracterFinal(event, "'", "'", '', 1);
+      agregarCaracterFinal(event, " '", "'", '  ', 3);
     } else if (event.key == '"') {
-      agregarCaracterFinal(event, '"', '"', '', 1);
+      agregarCaracterFinal(event, ' "', '"', '  ', 3);
     } else if (event.key == '(') {
       agregarCaracterFinal(event, ' (', ') ', '  ', 3);
+    } else if (event.key == '[') {
+      agregarCaracterFinal(event, ' [', '] ', '  ', 3);
     } else if (event.key == '+') {
       agregarCaracterFinal(event, ' ', '+ ', '', 3);
+    } else if (event.key == '-') {
+      agregarCaracterFinal(event, ' ', '- ', '', 3);
+    } else if (event.key == '*') {
+      agregarCaracterFinal(event, ' ', '* ', '', 3);
+    } else if (event.key == '/') {
+      agregarCaracterFinal(event, ' ', '/ ', '', 3);
+    } else if (event.key == '%') {
+      agregarCaracterFinal(event, ' ', '% ', '', 3);
+    } else if (event.key == '^') {
+      agregarCaracterFinal(event, ' ', '^ ', '', 3);
+    } else if (event.key == ',') {
+      agregarCaracterFinal(event, ' ', ', ', '', 3);
+    } else if (event.key == '.') {
+      agregarCaracterFinal(event, ' ', '. ', '', 3);
+    } else if (event.key == ':') {
+      agregarCaracterFinal(event, ' ', ': ', '', 3);
+    } else if (event.key == ';') {
+      agregarCaracterFinal(event, ' ', '; ', '', 3);
+    } else if (event.key == '=') {
+      agregarCaracterFinal(event, ' ', '= ', '', 3);
     }
   }
 
