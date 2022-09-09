@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-
+import { Component, EventEmitter, Input, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { handleKeydown } from './tools/handleKey';
 @Component({
   selector: 'app-code-text-area',
   templateUrl: './code-text-area.component.html',
@@ -11,74 +12,62 @@ export class CodeTextAreaComponent implements OnInit {
   private line?: Number = 1;
   private lines?: Number = 1;
 
-  default:string = "\
-def prueba ( a , b , c ) {\n\
-\twhile ( a == b ) {\n\
-\t\twhile ( c != a ) {\n\
-\t\t\tprint ( 'Hola' )\n\
-\t\t\tc = prueba ( c , b , a )\n\
-\t\t}\n\
-\t}\n\
-}"
+  form: FormGroup = new FormGroup({});
+  private fileReader = new FileReader();
+  private file: any;
   constructor() { }
 
+
   ngOnInit(): void {
-  }
-
-  private checkLine(temp: any) {
-    const data: string = temp.value.substring(0, temp.selectionStart);
-    const arr = data.split('\n');
-    return arr.length;
-  }
-  private checkLines(temp: any) {
-    const data: string = temp.value;
-    const arr = data.split('\n');
-    return arr.length;
-  }
-
-  handleKeydown(event: any) {
-    if (event.key == 'Tab') {
-      event.preventDefault();
-      var start = event.target.selectionStart;
-      var end = event.target.selectionEnd;
-      event.target.value = event.target.value.substring(0, start) + '\t' + event.target.value.substring(end);
-      event.target.selectionStart = event.target.selectionEnd = start + 1;
-    } else if (event.key == '{') {
-      this.agregarCaracterFinal(event, '{', '}', '\n', 1);
-    } else if (event.key == "'") {
-      this.agregarCaracterFinal(event, "'", "'", '', 1);
-    } else if (event.key == '"') {
-      this.agregarCaracterFinal(event, '"', '"', '', 1);
-    } else if (event.key == '(') {
-      this.agregarCaracterFinal(event, ' (', ') ', '  ', 3);
-    } else if (event.key == '+') {
-      this.agregarCaracterFinal(event, ' ', '+ ', '', 3);
+    this.form = new FormGroup({
+      file: new FormControl('', []),
+      textArea: new FormControl('', []),
+      lineCount: new FormControl('', [])
+    });
+    this.fileReader.onload = () => {
+      const {textArea} = this.form.controls;
+      const valueFromFile = (''+this.fileReader.result).replaceAll("\r\n", "\n");
+      textArea.setValue(valueFromFile);
     }
+    var codeEditor: any = document.getElementById('codeEditor');
+    var lineCounter: any = document.getElementById('lineCounter');
+    codeEditor.addEventListener('scroll', () => {
+      lineCounter.scrollTop = codeEditor.scrollTop;
+      lineCounter.scrollLeft = codeEditor.scrollLeft;
+    });
+    var lineCountCache = 0;
+    function line_counter() {
+      var lineCount = codeEditor.value.split('\n').length;
+      var outarr = new Array();
+      if (lineCountCache != lineCount) {
+        for (var x = 0; x < lineCount; x++) {
+          outarr[x] = (x + 1) + '.';
+        }
+        lineCounter.value = outarr.join('\n');
+      }
+      lineCountCache = lineCount;
+    }
+    codeEditor.addEventListener('input', () => {
+      line_counter();
+    });
+    
   }
 
-  private agregarCaracterFinal(event: any, caracterInicio: string, caracterFinal: string, separador: string, newPos: number) {
-    event.preventDefault();
-    var start = event.target.selectionStart;
-    var end = event.target.selectionEnd;
-    event.target.value = event.target.value.substring(0, start) + caracterInicio + separador + caracterFinal + event.target.value.substring(end);
-    event.target.selectionStart = event.target.selectionEnd = start + newPos;
+  fileChanged(e: any) {
+    let file = e.target.files[0];
+    this.fileReader.readAsText(file);
   }
 
-  handleKeyup(temp: any) {
-    this.line = this.checkLine(temp);
-    this.lines = this.checkLines(temp);
+  keyDown(event: any) {
+    handleKeydown(event);
   }
 
-  getLine() {
-    return this.line;
-  }
-
-  getLines() {
-    return this.lines;
-  }
-  sendData(textArea: any) {
+  sendData() {
+    const { textArea } = this.form.controls;
     if (this.$data) {
       this.$data.emit(textArea.value);
     }
   }
+
+
 }
